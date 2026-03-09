@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Math Laps">
+<title>Math Class Laps</title>
+<style>
+:root {
+  --navy:#0a1628; --gold:#f9c74f; --red:#c0392b; --green:#1a7a4a;
+  --white:#ffffff; --gray:#8a9ab5; --lgray:#1e2d45;
+  --s0:#3d5069; --s1:#7b2d2d; --s2:#7a5a1a; --s3:#1a5c3a; --s4:#1a3a7a;
+  --s0a:#5a7090; --s1a:#c0392b; --s2a:#c9a84c; --s3a:#27ae60; --s4a:#2980b9;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;background:var(--navy);color:var(--white);
+  font-family:-apple-system,'SF Pro Display',sans-serif;}
+
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;
+  transition:transform .28s cubic-bezier(.4,0,.2,1),opacity .28s;}
+.screen.hidden{transform:translateX(100%);opacity:0;pointer-events:none;}
+.screen.slide-left{transform:translateX(-100%);opacity:0;pointer-events:none;}
+
+/* TOP BAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;
+  padding:52px 20px 12px;background:var(--navy);
+  border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;}
+.topbar-title{font-size:1.1rem;font-weight:700;}
+.topbar-sub{font-size:.7rem;color:var(--gray);margin-top:2px;}
+.back-btn{font-size:.85rem;color:var(--gold);font-weight:600;
+  padding:6px 12px;border-radius:8px;background:rgba(249,199,79,.1);
+  border:none;cursor:pointer;white-space:nowrap;}
+
+/* HOME */
+.home-header{padding:56px 24px 16px;background:linear-gradient(180deg,#0d1e35 0%,var(--navy) 100%);}
+.app-title{font-size:2rem;font-weight:800;letter-spacing:-.02em;}
+.app-sub{font-size:.75rem;color:var(--gray);margin-top:4px;letter-spacing:.06em;text-transform:uppercase;}
+
+.sync-banner{margin:8px 16px;padding:10px 14px;border-radius:10px;
+  display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:600;
+  opacity:0;transition:opacity .4s;pointer-events:none;}
+.sync-banner.show{opacity:1;}
+.sync-banner.success{background:rgba(26,122,74,.25);border:1px solid rgba(26,122,74,.4);color:#4caf7d;}
+.sync-banner.pending{background:rgba(249,199,79,.15);border:1px solid rgba(249,199,79,.3);color:var(--gold);}
+.sync-banner.error{background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.4);color:#e74c3c;}
+
+.section-label{padding:12px 20px 6px;font-size:.68rem;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--gray);}
+
+.class-list{padding:0 16px;display:flex;flex-direction:column;gap:8px;
+  overflow-y:auto;flex:1;padding-bottom:24px;}
+.class-card{background:var(--lgray);border-radius:14px;padding:16px 18px;
+  display:flex;align-items:center;justify-content:space-between;
+  border:1px solid rgba(255,255,255,.06);cursor:pointer;transition:transform .1s,background .15s;}
+.class-card:active{transform:scale(.98);background:#263854;}
+.cls-name{font-size:1.1rem;font-weight:700;}
+.cls-meta{font-size:.72rem;color:var(--gray);margin-top:3px;}
+.cls-arrow{font-size:1.1rem;color:var(--gray);}
+.class-card.ncat{border-left:4px solid #5b9bd5;}
+.class-card.bama{border-left:4px solid #4caf7d;}
+.class-card.shawu{border-left:4px solid #b47fd4;}
+.class-card.famu{border-left:4px solid #ef6c6c;}
+.queue-badge{background:var(--gold);color:var(--navy);font-size:.62rem;
+  font-weight:800;padding:2px 7px;border-radius:99px;margin-left:6px;}
+
+/* SETUP */
+#setupScreen .content{padding:16px;overflow-y:auto;flex:1;padding-bottom:40px;}
+.setup-section{margin-bottom:20px;}
+.setup-section h3{font-size:.72rem;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--gray);margin-bottom:10px;}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.type-btn{background:var(--lgray);border:2px solid transparent;border-radius:12px;
+  padding:12px 10px;text-align:center;cursor:pointer;transition:all .15s;}
+.type-btn.selected{border-color:var(--gold);background:rgba(249,199,79,.1);}
+.type-btn .type-icon{font-size:1.4rem;margin-bottom:4px;}
+.type-btn .type-label{font-size:.82rem;font-weight:600;}
+.type-btn .type-sub{font-size:.62rem;color:var(--gray);margin-top:2px;}
+
+.toggle-row{display:flex;align-items:center;justify-content:space-between;
+  background:var(--lgray);border-radius:12px;padding:14px 16px;margin-bottom:10px;}
+.tl{font-size:.9rem;font-weight:600;}
+.ts{font-size:.7rem;color:var(--gray);margin-top:2px;}
+.toggle{width:48px;height:28px;background:#3d5069;border-radius:99px;
+  position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;}
+.toggle.on{background:var(--green);}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;
+  background:white;border-radius:50%;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+.toggle.on::after{transform:translateX(20px);}
+
+.start-btn{width:100%;padding:16px;background:var(--gold);color:var(--navy);
+  font-size:1.1rem;font-weight:800;border:none;border-radius:14px;cursor:pointer;}
+.start-btn:active{opacity:.85;}
+
+.info-box{background:var(--lgray);border-radius:12px;padding:14px 16px;
+  font-size:.78rem;color:var(--gray);line-height:1.6;margin-top:4px;}
+.info-box strong{color:var(--white);}
+
+/* LAP SCREEN */
+.lap-meta{display:flex;align-items:center;gap:8px;padding:8px 16px 8px;
+  border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;}
+.lap-tag{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 10px;border-radius:99px;background:rgba(249,199,79,.15);color:var(--gold);}
+.lap-progress{font-size:.7rem;color:var(--gray);margin-left:auto;}
+
+.student-list{flex:1;overflow-y:auto;padding:6px 12px 100px;}
+.student-row{display:flex;align-items:center;gap:10px;padding:9px 6px;
+  border-bottom:1px solid rgba(255,255,255,.04);}
+.student-row:last-child{border-bottom:none;}
+.s-info{flex:1;min-width:0;}
+.s-name{font-size:.9rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.s-sub{font-size:.62rem;color:var(--gray);margin-top:1px;}
+.s-seat{font-size:.6rem;color:rgba(255,255,255,.3);margin-top:1px;}
+
+/* 0-4 score buttons */
+.score-btns{display:flex;gap:5px;flex-shrink:0;}
+.sb{width:36px;height:36px;border-radius:9px;border:none;cursor:pointer;
+  font-size:.9rem;font-weight:800;color:rgba(255,255,255,.5);
+  background:var(--s0);transition:all .12s;}
+.sb:active{transform:scale(.9);}
+.sb.sel-0{background:var(--s0a);color:white;transform:scale(1.1);}
+.sb.sel-1{background:var(--s1a);color:white;transform:scale(1.1);}
+.sb.sel-2{background:var(--s2a);color:var(--navy);transform:scale(1.1);}
+.sb.sel-3{background:var(--s3a);color:white;transform:scale(1.1);}
+.sb.sel-4{background:var(--s4a);color:white;transform:scale(1.1);}
+
+/* Turn & Talk buttons */
+.tt-btns{display:flex;gap:6px;flex-shrink:0;}
+.ttb{width:44px;height:36px;border-radius:9px;border:none;cursor:pointer;
+  font-size:1rem;font-weight:800;color:rgba(255,255,255,.4);
+  background:var(--lgray);transition:all .12s;}
+.ttb:active{transform:scale(.9);}
+.ttb.sel-yes{background:var(--green);color:white;transform:scale(1.08);}
+.ttb.sel-no{background:var(--red);color:white;transform:scale(1.08);}
+
+/* Finish bar */
+.finish-bar{position:absolute;bottom:0;left:0;right:0;
+  padding:12px 16px 32px;background:linear-gradient(0deg,#0a1628 60%,transparent);
+  display:flex;align-items:center;gap:12px;}
+.finish-count{font-size:.78rem;color:var(--gray);flex:1;}
+.finish-btn{padding:12px 24px;background:var(--gold);color:var(--navy);
+  font-size:.95rem;font-weight:800;border:none;border-radius:12px;cursor:pointer;flex-shrink:0;}
+.finish-btn:active{opacity:.85;}
+
+/* SETTINGS */
+#settingsScreen .content{padding:20px;overflow-y:auto;flex:1;}
+.settings-input{width:100%;background:#1e2d45;border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;padding:12px 14px;color:white;font-size:.9rem;
+  margin-top:6px;margin-bottom:4px;}
+.save-btn{width:100%;padding:14px;background:var(--gold);color:var(--navy);
+  font-size:1rem;font-weight:800;border:none;border-radius:12px;cursor:pointer;margin-top:16px;}
+.queue-info{margin-top:16px;padding:12px 14px;background:#1e2d45;
+  border-radius:10px;font-size:.8rem;color:var(--gray);}
+</style>
+</head>
+<body>
+
+<!-- ══ HOME ══ -->
+<div class="screen" id="homeScreen">
+  <div class="home-header">
+    <div class="app-title">Math Laps</div>
+    <div class="app-sub">Key Academy · 5th Grade · Mr. Conlin</div>
+  </div>
+  <div class="sync-banner" id="syncBanner">
+    <span id="syncIcon">✓</span>&nbsp;<span id="syncMsg"></span>
+  </div>
+  <div class="section-label">Select Class</div>
+  <div class="class-list" id="classList"></div>
+  <button class="back-btn" onclick="showScreen('settingsScreen')"
+    style="position:absolute;top:54px;right:16px;font-size:1.2rem;
+           padding:6px 10px;background:none;border:none;">⚙️</button>
+</div>
+
+<!-- ══ SETUP ══ -->
+<div class="screen hidden" id="setupScreen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('homeScreen','left')">← Classes</button>
+    <div style="text-align:right;">
+      <div class="topbar-title" id="setupTitle"></div>
+      <div class="topbar-sub" id="setupSub"></div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="setup-section">
+      <h3>Lap Type</h3>
+      <div class="type-grid">
+        <div class="type-btn selected" data-type="Do Now" onclick="selectType(this)">
+          <div class="type-icon">📋</div>
+          <div class="type-label">Do Now</div>
+          <div class="type-sub">0–4 scale</div>
+        </div>
+        <div class="type-btn" data-type="Turn & Talk" onclick="selectType(this)">
+          <div class="type-icon">💬</div>
+          <div class="type-label">Turn & Talk</div>
+          <div class="type-sub">Engaged / Not</div>
+        </div>
+        <div class="type-btn" data-type="Classwork" onclick="selectType(this)">
+          <div class="type-icon">✏️</div>
+          <div class="type-label">Classwork</div>
+          <div class="type-sub">0–4 scale</div>
+        </div>
+        <div class="type-btn" data-type="Ind. Practice" onclick="selectType(this)">
+          <div class="type-icon">🔢</div>
+          <div class="type-label">Ind. Practice</div>
+          <div class="type-sub">0–4 scale</div>
+        </div>
+        <div class="type-btn" data-type="Exit Ticket" onclick="selectType(this)">
+          <div class="type-icon">🎯</div>
+          <div class="type-label">Exit Ticket</div>
+          <div class="type-sub">0–4 scale</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="setup-section">
+      <div class="toggle-row" onclick="toggleFullLap()">
+        <div>
+          <div class="tl">Full Class Lap</div>
+          <div class="ts">I scored every student this round</div>
+        </div>
+        <div class="toggle on" id="fullLapToggle"></div>
+      </div>
+    </div>
+
+    <button class="start-btn" onclick="startLap()">Start Lap →</button>
+
+    <div class="info-box" style="margin-top:16px;">
+      <strong>Scale</strong><br>
+      0 = Absent / pulled &nbsp;·&nbsp; 1 = Not engaged<br>
+      2 = Started, not there yet &nbsp;·&nbsp; 3 = On track<br>
+      4 = Above & beyond / exemplar
+    </div>
+  </div>
+</div>
+
+<!-- ══ LAP ENTRY ══ -->
+<div class="screen hidden" id="lapScreen">
+  <div class="topbar">
+    <button class="back-btn" onclick="confirmBack()">✕ Cancel</button>
+    <div style="text-align:right;">
+      <div class="topbar-title" id="lapTitle"></div>
+      <div class="topbar-sub" id="lapDate"></div>
+    </div>
+  </div>
+  <div class="lap-meta">
+    <div class="lap-tag" id="lapTag">Do Now</div>
+    <div class="lap-progress" id="lapProgress">0 / 0 scored</div>
+  </div>
+  <div class="student-list" id="studentList"></div>
+  <div class="finish-bar">
+    <div class="finish-count" id="finishCount"></div>
+    <button class="finish-btn" onclick="finishLap()">Save Lap ✓</button>
+  </div>
+</div>
+
+<!-- ══ SETTINGS ══ -->
+<div class="screen hidden" id="settingsScreen">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('homeScreen','left')">← Back</button>
+    <div style="text-align:right;">
+      <div class="topbar-title">Settings</div>
+      <div class="topbar-sub">Google Sheets sync</div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="section-label" style="padding:0 0 6px;">Apps Script URL</div>
+    <input class="settings-input" id="scriptUrl" type="url"
+      placeholder="https://script.google.com/macros/s/.../exec">
+    <button class="save-btn" onclick="saveSettings()">Save</button>
+    <div class="queue-info" id="queueInfo"></div>
+    <div class="info-box" style="margin-top:12px;">
+      Leave blank to use offline only — all laps save to this device.<br><br>
+      To connect Google Sheets later: deploy <strong>AppsScript_MathLapTracker.js</strong>
+      as a web app and paste the URL above.
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STORAGE ──────────────────────────────────────────────────────────────────
+const QUEUE_KEY = 'mathclass_queue_v1';
+let queue = JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]');
+function saveQueue() { localStorage.setItem(QUEUE_KEY, JSON.stringify(queue)); }
+
+// ── ROSTER ───────────────────────────────────────────────────────────────────
+// Order: alphabetical by last name for now. Update seat numbers + reorder when ready.
+// seat field = desk number 1-28 (1-25 grid, 26=back-right, 27=back-left, 28=front help desk)
+const ROSTER = {
+  NCAT: [
+    {name:'Adams, Ramello',      seat:0},
+    {name:'Bagley, Skylar',      seat:0},
+    {name:'Bagley Jones, Tina',  seat:0},
+    {name:'Bingham, Hayden',     seat:0},
+    {name:'Bond, Addison',       seat:0},
+    {name:'Boston, Fiyah',       seat:0},
+    {name:'Fludd, Joseph',       seat:0},
+    {name:'Frager, Kali',        seat:0},
+    {name:'Gorham, Marleigh',    seat:0},
+    {name:'Greene, Syncere',     seat:0},
+    {name:'Gross, Rylee',        seat:0},
+    {name:'Heard, Jeffery',      seat:0},
+    {name:'Hebron, Ravon',       seat:0},
+    {name:'Henry, Ryland',       seat:0},
+    {name:'Hutchinson, Violet',  seat:0},
+    {name:'James, Masika',       seat:0},
+    {name:'Jefferson, Sincere',  seat:0},
+    {name:'Jones, Amore',        seat:0},
+    {name:'Mack, Dorian',        seat:0},
+    {name:'McCoo, Ariana',       seat:0},
+    {name:'Miles, Audrey',       seat:0},
+    {name:'Moore, Achilles',     seat:0},
+    {name:'Wade, Raashad',       seat:0},
+    {name:'Wagoner, Jaleah',     seat:0},
+  ],
+  BAMA: [
+    {name:'Acholonu, Bella',     seat:0},
+    {name:'Brooks, Tristan',     seat:0},
+    {name:"Fogle, Ty'Eon",       seat:0},
+    {name:'Graham, Kyesha',      seat:0},
+    {name:'Henderson, Brielle',  seat:0},
+    {name:"Hinson, G'Cari",      seat:0},
+    {name:'Johnson, Jashoun',    seat:0},
+    {name:'Logan, Jayden',       seat:0},
+    {name:'Manley, Daisy',       seat:0},
+    {name:'Nicol, Noah',         seat:0},
+    {name:'Phillips, Sean',      seat:0},
+    {name:'Sheffield, Mason',    seat:0},
+    {name:'Smith, Malique',      seat:0},
+    {name:'Snipe, Treasure',     seat:0},
+    {name:'Stoddard, Bryson',    seat:0},
+    {name:'Thomas, Israel',      seat:0},
+    {name:'Thompson, Takiyah',   seat:0},
+    {name:"Tolson, Desirah'",    seat:0},
+    {name:'Todd, Dameer',        seat:0},
+    {name:'Walker, Malik',       seat:0},
+    {name:'Wells, Dylan',        seat:0},
+  ],
+  SHAWU: [
+    {name:'Abney, Amir',         seat:0},
+    {name:'Allen, Micah',        seat:0},
+    {name:'Ashley, Leila',       seat:0},
+    {name:'Bagley, Aiyana',      seat:0},
+    {name:'Bennett, Noah',       seat:0},
+    {name:'Broadnax-Bell, Angel',seat:0},
+    {name:'Camp-Carter, Marlei', seat:0},
+    {name:'Claggett, Aria',      seat:0},
+    {name:'Hall, Cason',         seat:0},
+    {name:'Johnson, Charlie',    seat:0},
+    {name:'Johnson, Kyra',       seat:0},
+    {name:'Johnston, Immanuel',  seat:0},
+    {name:'Lewis, Lenden',       seat:0},
+    {name:'Lynch, Saniyah',      seat:0},
+    {name:'Osborne, Londyn',     seat:0},
+    {name:'Pendarvis, Kamille',  seat:0},
+    {name:'Rorie, Amira',        seat:0},
+    {name:'Sass, Otto',          seat:0},
+    {name:'Smith, Ahmad',        seat:0},
+    {name:'Snead, Zayla',        seat:0},
+    {name:'Stuckey, Keith',      seat:0},
+    {name:'Thomas, Jamari',      seat:0},
+    {name:'Ward, Dyson',         seat:0},
+    {name:'Womack, Harmonee',    seat:0},
+    {name:'Woodard, Rachell',    seat:0},
+    {name:'Wright, Dakari',      seat:0},
+    {name:'Zarate Funes, Alexia',seat:0},
+  ],
+  FAMU: [
+    {name:'Allen, Zakari',        seat:0},
+    {name:'Aull, Jahmir',         seat:0},
+    {name:'Bingham, Hunter',      seat:0},
+    {name:"Brown, Cyn'Sere",      seat:0},
+    {name:'Coleman, Kaylee',      seat:0},
+    {name:'Ferguson, Noel',       seat:0},
+    {name:"Fisher, Na'laiyah",    seat:0},
+    {name:'Funes Nolasco, Britney',seat:0},
+    {name:'Gillis, Jeremiah',     seat:0},
+    {name:'Gorham, Jiselle',      seat:0},
+    {name:"Green, Te'yshawn",     seat:0},
+    {name:"Gross, A'Miyah",       seat:0},
+    {name:'James, Ayawna',        seat:0},
+    {name:"Jenkins, De'Mya",      seat:0},
+    {name:'Johnson, Samir',       seat:0},
+    {name:'Jones, Aliina',        seat:0},
+    {name:'Kelly Jr., Torrain',   seat:0},
+    {name:'Perry, Camryn',        seat:0},
+    {name:'Porter, Royal',        seat:0},
+    {name:'Simms, Kamiah',        seat:0},
+    {name:'Smith, Amari',         seat:0},
+    {name:'Smith, Kyree',         seat:0},
+    {name:'Sullivan, Miles',      seat:0},
+    {name:"White, Kai'A",         seat:0},
+    {name:'White, Tyelen',        seat:0},
+    {name:'Whittington, Sirryah', seat:0},
+    {name:'Wills, Jemir',         seat:0},
+  ],
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let currentClass = null;
+let currentType  = 'Do Now';
+let currentFull  = true;
+let currentScores = {};
+
+// ── SCREEN NAV ────────────────────────────────────────────────────────────────
+function showScreen(id, direction) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('hidden','slide-left');
+    if (s.id !== id)
+      s.classList.add(direction === 'left' ? 'slide-left' : 'hidden');
+  });
+  if (id === 'homeScreen') renderHome();
+  if (id === 'settingsScreen') updateQueueInfo();
+}
+
+// ── HOME ──────────────────────────────────────────────────────────────────────
+function renderHome() {
+  const list = document.getElementById('classList');
+  list.innerHTML = '';
+  const pendingMap = {};
+  queue.forEach(e => { pendingMap[e.cls] = (pendingMap[e.cls]||0) + 1; });
+
+  [['NCAT','ncat'],['BAMA','bama'],['SHAWU','shawu'],['FAMU','famu']].forEach(([cls, style]) => {
+    const students = ROSTER[cls] || [];
+    const pending  = pendingMap[cls] || 0;
+    const card = document.createElement('div');
+    card.className = `class-card ${style}`;
+    card.innerHTML = `
+      <div>
+        <div class="cls-name">${cls}
+          ${pending ? `<span class="queue-badge">${pending} pending</span>` : ''}
+        </div>
+        <div class="cls-meta">${students.length} students · Math Class</div>
+      </div>
+      <div class="cls-arrow">›</div>`;
+    card.onclick = () => openSetup(cls);
+    list.appendChild(card);
+  });
+}
+
+// ── SETUP ─────────────────────────────────────────────────────────────────────
+function openSetup(cls) {
+  currentClass  = cls;
+  currentScores = {};
+  currentType   = 'Do Now';
+  currentFull   = true;
+  document.getElementById('setupTitle').textContent = cls;
+  document.getElementById('setupSub').textContent   = `${ROSTER[cls].length} students`;
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelector('.type-btn').classList.add('selected');
+  document.getElementById('fullLapToggle').classList.add('on');
+  showScreen('setupScreen');
+}
+
+function selectType(el) {
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  currentType = el.dataset.type;
+}
+
+function toggleFullLap() {
+  currentFull = !currentFull;
+  document.getElementById('fullLapToggle').classList.toggle('on', currentFull);
+}
+
+// ── LAP ───────────────────────────────────────────────────────────────────────
+function startLap() {
+  currentScores = {};
+  const now = new Date();
+  document.getElementById('lapTitle').textContent = `${currentClass} — ${currentType}`;
+  document.getElementById('lapTag').textContent   = currentType;
+  document.getElementById('lapDate').textContent  =
+    now.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  renderLap();
+  showScreen('lapScreen');
+}
+
+function renderLap() {
+  const isTT     = currentType === 'Turn & Talk';
+  const students = ROSTER[currentClass] || [];
+  const list     = document.getElementById('studentList');
+  list.innerHTML = '';
+
+  students.forEach(s => {
+    const safeId = s.name.replace(/[^a-zA-Z0-9]/g,'_');
+    const row    = document.createElement('div');
+    row.className = 'student-row';
+    row.id = `row_${safeId}`;
+
+    const seatLabel = s.seat ? `Seat ${s.seat}` : '';
+
+    let btns = '';
+    if (isTT) {
+      const sy = currentScores[s.name]==='yes' ? 'sel-yes' : '';
+      const sn = currentScores[s.name]==='no'  ? 'sel-no'  : '';
+      btns = `<div class="tt-btns">
+        <button class="ttb ${sy}" onclick="scoreTT('${safeId}','${s.name}','yes',this)">✓</button>
+        <button class="ttb ${sn}" onclick="scoreTT('${safeId}','${s.name}','no',this)">✗</button>
+      </div>`;
+    } else {
+      btns = `<div class="score-btns">` +
+        [0,1,2,3,4].map(n => {
+          const sel = currentScores[s.name]===n ? `sel-${n}` : '';
+          return `<button class="sb ${sel}"
+            onclick="scoreStudent('${safeId}','${s.name}',${n},this)">${n}</button>`;
+        }).join('') + `</div>`;
+    }
+
+    row.innerHTML = `
+      <div class="s-info">
+        <div class="s-name">${s.name}</div>
+        ${seatLabel ? `<div class="s-seat">${seatLabel}</div>` : ''}
+      </div>
+      ${btns}`;
+    list.appendChild(row);
+  });
+
+  updateProgress();
+}
+
+function scoreStudent(safeId, name, score, el) {
+  currentScores[name] = score;
+  const row = document.getElementById(`row_${safeId}`);
+  row.querySelectorAll('.sb').forEach((b, i) => {
+    b.className = `sb${i === score ? ' sel-'+i : ''}`;
+  });
+  updateProgress();
+}
+
+function scoreTT(safeId, name, val, el) {
+  currentScores[name] = val;
+  const row = document.getElementById(`row_${safeId}`);
+  row.querySelectorAll('.ttb').forEach(b => {
+    const isYes = b.textContent.trim() === '✓';
+    const isNo  = b.textContent.trim() === '✗';
+    b.className = 'ttb' +
+      (isYes && val==='yes' ? ' sel-yes' : isNo && val==='no' ? ' sel-no' : '');
+  });
+  updateProgress();
+}
+
+function updateProgress() {
+  const total  = (ROSTER[currentClass]||[]).length;
+  const scored = Object.keys(currentScores).length;
+  document.getElementById('lapProgress').textContent =
+    `${scored} / ${total} scored`;
+  document.getElementById('finishCount').textContent =
+    `${scored} of ${total} scored · ${total - scored} blank`;
+}
+
+function confirmBack() {
+  if (Object.keys(currentScores).length > 0) {
+    if (!confirm('Discard this lap? Scores will be lost.')) return;
+  }
+  showScreen('setupScreen', 'left');
+}
+
+// ── FINISH ────────────────────────────────────────────────────────────────────
+function finishLap() {
+  const now      = new Date();
+  const dateStr  = now.toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'});
+  const timeStr  = now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  const students = ROSTER[currentClass] || [];
+
+  students.forEach(s => {
+    queue.push({
+      date:    dateStr,
+      time:    timeStr,
+      cls:     currentClass,
+      lapType: currentType,
+      fullLap: currentFull ? 'Y' : 'N',
+      student: s.name,
+      seat:    s.seat || '',
+      score:   currentScores[s.name] !== undefined ? String(currentScores[s.name]) : '',
+      blank:   currentScores[s.name] === undefined ? 'Y' : 'N',
+    });
+  });
+
+  saveQueue();
+  attemptSync();
+  showScreen('homeScreen', 'left');
+}
+
+// ── SYNC ──────────────────────────────────────────────────────────────────────
+async function attemptSync() {
+  if (!queue.length) return;
+  const url = localStorage.getItem('mathclass_scriptUrl');
+  if (!url) {
+    showBanner('pending', `${queue.length} entries saved · Connect Google Sheets in Settings to sync`);
+    return;
+  }
+  showBanner('pending', 'Syncing…');
+  try {
+    await fetch(url, {
+      method: 'POST', mode: 'no-cors',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ entries: queue }),
+    });
+    const n = queue.length;
+    queue = []; saveQueue();
+    showBanner('success', `${n} entries synced ✓`);
+  } catch {
+    showBanner('error', 'No connection — saved locally, will retry');
+  }
+  renderHome();
+}
+
+function showBanner(type, msg) {
+  const b = document.getElementById('syncBanner');
+  b.className = `sync-banner show ${type}`;
+  document.getElementById('syncIcon').textContent = type==='success'?'✓':type==='pending'?'⏳':'✕';
+  document.getElementById('syncMsg').textContent  = msg;
+  if (type === 'success') setTimeout(() => b.classList.remove('show'), 4000);
+}
+
+window.addEventListener('online', () => { if (queue.length) attemptSync(); });
+
+// ── SETTINGS ─────────────────────────────────────────────────────────────────
+function saveSettings() {
+  const url = document.getElementById('scriptUrl').value.trim();
+  if (url) localStorage.setItem('mathclass_scriptUrl', url);
+  showScreen('homeScreen', 'left');
+}
+
+function updateQueueInfo() {
+  document.getElementById('queueInfo').textContent = queue.length
+    ? `${queue.length} entries saved locally, waiting to sync`
+    : 'No pending entries — all synced';
+  document.getElementById('scriptUrl').value =
+    localStorage.getItem('mathclass_scriptUrl') || '';
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderHome();
+</script>
+</body>
+</html>
