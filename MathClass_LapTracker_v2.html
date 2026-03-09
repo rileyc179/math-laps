@@ -264,29 +264,85 @@ html,body{height:100%;overflow:hidden;background:var(--navy);color:var(--white);
     </div>
   </div>
   <div class="content">
-    <div class="section-label" style="padding:0 0 6px;">Apps Script URL</div>
-    <input class="settings-input" id="scriptUrl" type="url"
-      placeholder="https://script.google.com/macros/s/.../exec">
-    <button class="save-btn" onclick="saveSettings()">Save</button>
-    <div class="queue-info" id="queueInfo"></div>
-    <div class="info-box" style="margin-top:12px;">
-      Leave blank to use offline only — all laps save to this device.<br><br>
-      To connect Google Sheets later: deploy <strong>AppsScript_MathLapTracker.js</strong>
-      as a web app and paste the URL above.
+    <div class="info-box">
+      <strong>Roster</strong> — pulls live from Google Sheets every 5 minutes.<br>
+      Update seats or names in the <strong>Math Roster</strong> tab and the app will refresh automatically.<br><br>
+      <strong>Data</strong> — syncs to Google Sheets after every lap.<br>
+      Entries saved locally if offline and retry when connection returns.
     </div>
+    <div class="queue-info" id="queueInfo"></div>
+    <button class="save-btn" onclick="fetchRoster()">🔄 Refresh Roster Now</button>
   </div>
 </div>
 
 <script>
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+const ROSTER_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQFULSfoken5d0AHUN-3GmapGbMoAFg7ElogEr4JAjJfslGj4p9GDJiQFW748Fm8CkMIBRhplKP_kG8/pub?gid=313645115&single=true&output=csv';
+const SCRIPT_URL     = 'https://script.google.com/macros/s/AKfycbyVipU6aVjRTULEUlWSDYMFVbSoaXMnw-BdyAz10qq4caBTCpEH5Lwcew4c6XQrrwv5PQ/exec';
+
 // ── STORAGE ──────────────────────────────────────────────────────────────────
-const QUEUE_KEY = 'mathclass_queue_v1';
+const QUEUE_KEY  = 'mathclass_queue_v1';
+const ROSTER_KEY = 'mathclass_roster_v1';
 let queue = JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]');
-function saveQueue() { localStorage.setItem(QUEUE_KEY, JSON.stringify(queue)); }
+function saveQueue()  { localStorage.setItem(QUEUE_KEY,  JSON.stringify(queue));  }
+function saveRoster(r){ localStorage.setItem(ROSTER_KEY, JSON.stringify(r));      }
 
 // ── ROSTER ───────────────────────────────────────────────────────────────────
-// Order: alphabetical by last name for now. Update seat numbers + reorder when ready.
-// seat field = desk number 1-28 (1-25 grid, 26=back-right, 27=back-left, 28=front help desk)
-const ROSTER = {
+// Live roster fetched from Google Sheets CSV on load.
+// Falls back to cached version, then hardcoded if offline on first launch.
+let ROSTER = JSON.parse(localStorage.getItem(ROSTER_KEY) || 'null');
+
+// Parse CSV → {NCAT:[...], BAMA:[...], SHAWU:[...], FAMU:[...]}
+function parseRosterCSV(csv) {
+  const lines = csv.trim().split('\n').slice(2); // skip instruction row + header row
+  const out = {NCAT:[], BAMA:[], SHAWU:[], FAMU:[]};
+  lines.forEach(line => {
+    // Handle quoted fields
+    const cols = line.match(/(".*?"|[^,]+|(?<=,)(?=,)|^(?=,)|(?<=,)$)/g) || [];
+    const clean = cols.map(c => c.replace(/^"|"$/g,'').trim());
+    const cls   = clean[0];
+    const last  = clean[1];
+    const first = clean[2];
+    const seat  = parseInt(clean[4]) || 0;
+    if (cls && last && first && out[cls]) {
+      out[cls].push({ name: `${last}, ${first}`, seat });
+    }
+  });
+  // Sort each class by seat number (0s go to end), then alpha
+  Object.keys(out).forEach(cls => {
+    out[cls].sort((a,b) => {
+      if (a.seat && b.seat) return a.seat - b.seat;
+      if (a.seat) return -1;
+      if (b.seat) return 1;
+      return a.name.localeCompare(b.name);
+    });
+  });
+  return out;
+}
+
+async function fetchRoster() {
+  try {
+    const res  = await fetch(ROSTER_CSV_URL + '&t=' + Date.now());
+    const text = await res.text();
+    const parsed = parseRosterCSV(text);
+    // Only update if we got real data
+    const total = Object.values(parsed).reduce((s,a)=>s+a.length,0);
+    if (total > 0) {
+      ROSTER = parsed;
+      saveRoster(ROSTER);
+      renderHome();
+      showBanner('success', `Roster updated — ${total} students loaded`);
+      setTimeout(()=>document.getElementById('syncBanner').classList.remove('show'), 3000);
+    }
+  } catch(e) {
+    // Silently fall back to cached/hardcoded
+    if (!ROSTER) ROSTER = HARDCODED_ROSTER;
+  }
+}
+
+// ── HARDCODED FALLBACK ────────────────────────────────────────────────────────
+// Used only if offline on very first launch (no cached roster yet)
+const HARDCODED_ROSTER = {
   NCAT: [
     {name:'Adams, Ramello',      seat:0},
     {name:'Bagley, Skylar',      seat:0},
@@ -394,7 +450,7 @@ const ROSTER = {
     {name:'Whittington, Sirryah', seat:0},
     {name:'Wills, Jemir',         seat:0},
   ],
-};
+}; // end HARDCODED_ROSTER
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let currentClass = null;
@@ -584,14 +640,9 @@ function finishLap() {
 // ── SYNC ──────────────────────────────────────────────────────────────────────
 async function attemptSync() {
   if (!queue.length) return;
-  const url = localStorage.getItem('mathclass_scriptUrl');
-  if (!url) {
-    showBanner('pending', `${queue.length} entries saved · Connect Google Sheets in Settings to sync`);
-    return;
-  }
   showBanner('pending', 'Syncing…');
   try {
-    await fetch(url, {
+    await fetch(SCRIPT_URL, {
       method: 'POST', mode: 'no-cors',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ entries: queue }),
@@ -617,8 +668,6 @@ window.addEventListener('online', () => { if (queue.length) attemptSync(); });
 
 // ── SETTINGS ─────────────────────────────────────────────────────────────────
 function saveSettings() {
-  const url = document.getElementById('scriptUrl').value.trim();
-  if (url) localStorage.setItem('mathclass_scriptUrl', url);
   showScreen('homeScreen', 'left');
 }
 
@@ -626,12 +675,15 @@ function updateQueueInfo() {
   document.getElementById('queueInfo').textContent = queue.length
     ? `${queue.length} entries saved locally, waiting to sync`
     : 'No pending entries — all synced';
-  document.getElementById('scriptUrl').value =
-    localStorage.getItem('mathclass_scriptUrl') || '';
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
+// If no cached roster yet, use hardcoded while fetch runs
+if (!ROSTER) ROSTER = HARDCODED_ROSTER;
 renderHome();
+fetchRoster();
+// Refresh roster every 5 min while online
+setInterval(() => { if (navigator.onLine) fetchRoster(); }, 300000);
 </script>
 </body>
 </html>
