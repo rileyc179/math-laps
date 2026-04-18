@@ -30,8 +30,8 @@ I Do You Do Template.html          ← master template for I Do / You Do lessons
 README.md                          ← project notes
 index.html                         ← navigation page
 daily/                             ← one file per day, organized by week
-week-of-MM-DD/
-YYYY-MM-DD Day N.html
+week-of-04-20/                 ← first week (Mon April 20 = Day 1)
+2026-04-20 Day 1.html
 problems/                          ← reusable scaffold snippets
 area-model.html
 bar-model.html
@@ -44,7 +44,8 @@ uploads/                           ← scanned PDFs for reference (do not edit)
 ## How to make a new daily file
 
 1. Copy Morning Work Template.html into daily/week-of-[monday-date]/
-2. Name it: YYYY-MM-DD Day N.html (e.g. 2026-04-21 Day 11.html)
+2. Name it: YYYY-MM-DD Day N.html (e.g. 2026-04-21 Day 2.html)
+   Day numbering starts at 1 = Monday April 20, 2026. Count up from there.
 3. Update the masthead: date, day number, standard code, topic name
 4. Fill in: math joke, fluency facts, and each problem prompt
 5. For scaffolds: paste the relevant snippet from problems/ or remove the scaffold block entirely
@@ -66,7 +67,7 @@ uploads/                           ← scanned PDFs for reference (do not edit)
 ## What Riley will tell you each morning
 
 When Riley asks for a new daily file, he will provide some or all of:
-- Date and day number (e.g. "April 21, Day 11")
+- Date and day number (e.g. "April 21, Day 2") — Day 1 = April 20, 2026
 - Standard (e.g. "5.NF.B.4")
 - Topic / skill name (e.g. "Multiplying a fraction by a whole number")
 - Math joke (optional — Riley may ask you to suggest one)
