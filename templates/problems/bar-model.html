@@ -1,0 +1,26 @@
+<!-- Bar / tape model · divisible rectangle for fraction problems.
+     Paste the contents of this file into a problem's scaffold slot:
+       <div class="scaffold">
+         [paste here]
+       </div>
+     Change grid-template-columns repeat count to adjust the number of parts. -->
+
+<style>
+  .bar-model {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr); /* change 8 to match your problem */
+    border: 1.5px solid var(--line);
+    height: 50px;
+    max-width: 420px;
+  }
+  .bar-model > div {
+    border-right: 1px solid var(--line);
+  }
+  .bar-model > div:last-child { border-right: none; }
+</style>
+
+<div class="scaffold-label">Bar model</div>
+<div class="bar-model">
+  <div></div><div></div><div></div><div></div>
+  <div></div><div></div><div></div><div></div>
+</div>

@@ -1,0 +1,43 @@
+<!-- Number line · blank with evenly spaced tick marks.
+     Paste the contents of this file into a problem's scaffold slot:
+       <div class="scaffold">
+         [paste here]
+       </div>
+     Update the numline-labels spans (0 and 1 by default) to match your problem. -->
+
+<style>
+  .numline { display: flex; align-items: center; margin: 8px 0 4px; }
+  .numline-track {
+    flex: 1; height: 2px; background: var(--line);
+    position: relative; margin: 0 4px;
+  }
+  .numline-track::before, .numline-track::after {
+    content: ''; position: absolute; top: -5px; width: 2px; height: 12px; background: var(--line);
+  }
+  .numline-track::before { left: 0; }
+  .numline-track::after { right: 0; }
+  .numline-ticks {
+    position: absolute; top: -5px; left: 0; right: 0; height: 12px;
+    display: flex; justify-content: space-between;
+  }
+  .numline-ticks div { width: 2px; background: var(--line); }
+  .numline-arrow { font-family: var(--display); font-size: 20px; line-height: 1; }
+  .numline-labels {
+    display: flex; justify-content: space-between;
+    font-family: var(--display); font-size: 16px; margin-top: 6px; padding: 0 4px;
+  }
+</style>
+
+<div class="scaffold-label">Number line</div>
+<div class="numline">
+  <span class="numline-arrow">←</span>
+  <div class="numline-track">
+    <div class="numline-ticks">
+      <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+    </div>
+  </div>
+  <span class="numline-arrow">→</span>
+</div>
+<div class="numline-labels">
+  <span>0</span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span>1</span>
+</div>
