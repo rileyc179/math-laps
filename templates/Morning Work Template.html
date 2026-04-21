@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Morning Work · Template</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Kalam:wght@300;400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #111;
+    --muted: #666;
+    --line: #222;
+    --paper: #fff;
+    --soft: #f5f3ec;
+    --display: "Caveat", "Kalam", cursive;
+    --hand: "Kalam", cursive;
+    --body: "Inter", system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #e8e4d8; font-family: var(--body); color: var(--ink); }
+  body { padding: 28px 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+
+  /* 8.5 × 11 page @ 96dpi = 816 × 1056 */
+  .page {
+    width: 816px;
+    min-height: 1056px;
+    background: var(--paper);
+    padding: 40px 48px 56px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 8px 30px rgba(0,0,0,0.1);
+    position: relative;
+  }
+
+  /* ─── Header ─── */
+  .masthead {
+    border-bottom: 2.5px solid var(--line);
+    padding-bottom: 10px;
+    margin-bottom: 16px;
+  }
+  .masthead-top {
+    font-size: 10px;
+    letter-spacing: 2.4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .masthead-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .title {
+    font-family: var(--display);
+    font-size: 64px;
+    line-height: 0.82;
+    font-weight: 700;
+    letter-spacing: -1px;
+  }
+  .title-sub {
+    font-family: var(--body);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: 0.2px;
+    margin-top: 4px;
+  }
+  .day-badge {
+    display: inline-block;
+    background: var(--line);
+    color: var(--paper);
+    font-family: var(--display);
+    font-size: 24px;
+    line-height: 1;
+    padding: 6px 14px 8px;
+    transform: rotate(-2deg);
+    margin-bottom: 4px;
+  }
+  .standard-tag {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: right;
+    font-weight: 500;
+  }
+
+  /* ─── Name strip ─── */
+  .name-strip {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    font-size: 11px;
+    letter-spacing: 1.2px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .name-strip .field { display: flex; align-items: baseline; gap: 8px; }
+  .name-strip .rule { border-bottom: 1.5px solid var(--line); height: 20px; }
+
+  /* ─── Section label ─── */
+  .sec {
+    font-size: 10px;
+    letter-spacing: 2.2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .sec .note { font-weight: 400; text-transform: none; letter-spacing: 0.3px; color: var(--muted); margin-left: 8px; font-size: 10px; }
+
+  /* ─── Check-in + Joke row ─── */
+  .top-row {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .card {
+    border: 1.5px solid var(--line);
+    padding: 10px 12px;
+    background: var(--paper);
+  }
+  .checkin-scale {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin-top: 2px;
+  }
+  .checkin-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .checkin-num {
+    width: 100%;
+    aspect-ratio: 1 / 0.85;
+    border: 1.5px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--display);
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .checkin-label {
+    font-size: 8.5px;
+    text-align: center;
+    line-height: 1.15;
+    color: var(--muted);
+    font-weight: 500;
+    height: 22px;
+  }
+
+  .joke-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .joke-q { font-family: var(--display); font-size: 18px; line-height: 1.1; }
+  .joke-q em { font-style: normal; font-weight: 700; margin-right: 4px; }
+  .joke-a { font-family: var(--display); font-size: 18px; line-height: 1.1; margin-top: 2px; }
+  .joke-rate {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+  .joke-rate .stars { display: flex; gap: 4px; }
+  .joke-rate .star {
+    width: 18px; height: 18px;
+    border: 1.2px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--display);
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  /* ─── Fluency sprint ─── */
+  .fluency {
+    border: 1.5px solid var(--line);
+    padding: 12px 14px;
+    margin-bottom: 16px;
+  }
+  .fluency-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .fluency-title {
+    font-family: var(--display);
+    font-size: 26px;
+    line-height: 1;
+  }
+  .fluency-title small {
+    font-family: var(--body);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-left: 8px;
+    font-weight: 600;
+  }
+  .fluency-timer {
+    font-family: var(--display);
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .fluency-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px 24px;
+  }
+  .fact {
+    font-family: var(--body);
+    font-size: 16px;
+    font-weight: 500;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .fact .ans {
+    flex: 1;
+    border-bottom: 1.5px solid var(--line);
+    height: 18px;
+  }
+
+  /* ─── Practice ─── */
+  .practice-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .practice-title {
+    font-family: var(--display);
+    font-size: 26px;
+    line-height: 1;
+  }
+  .practice-sub {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .problem {
+    display: flex;
+    gap: 14px;
+    border: 1.5px solid var(--line);
+    padding: 12px 14px;
+  }
+  .p-num {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--line);
+    color: var(--paper);
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .p-body { flex: 1; min-width: 0; }
+  .p-meta {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .p-prompt {
+    font-family: var(--body);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+
+  /* ─── Work space (blank white room to solve) ─── */
+  .work-space { min-height: 200px; }
+  .work-space.short { min-height: 120px; }
+  .work-space.tall { min-height: 280px; }
+
+  /* ─── Problem scaffold (optional slot) ─── */
+  .scaffold { margin-top: 10px; margin-bottom: 6px; }
+  .scaffold-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  /* ─── Area model (used in scaffold slot) ─── */
+  .area-model {
+    width: 220px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 2fr 1fr;
+    border: 1.5px solid var(--line);
+    height: 180px;
+  }
+  .area-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--display);
+    font-size: 16px;
+    color: var(--muted);
+  }
+  .area-cell.tl { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .area-cell.tr { border-bottom: 1px solid var(--line); }
+  .area-cell.bl { border-right: 1px solid var(--line); }
+  .area-labels-top {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .area-label-side {
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 700;
+    display: grid;
+    grid-template-rows: 2fr 1fr;
+    align-items: center;
+    height: 180px;
+    padding-top: 20px;
+  }
+  .area-label-side div { display: flex; align-items: center; justify-content: center; }
+
+  .answer-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--line);
+  }
+  .answer-label {
+    background: var(--line);
+    color: var(--paper);
+    font-family: var(--display);
+    font-size: 20px;
+    font-weight: 700;
+    padding: 4px 16px 6px;
+    transform: rotate(-2deg);
+  }
+  .answer-rule {
+    width: 240px;
+    border-bottom: 2px solid var(--line);
+    height: 32px;
+  }
+
+  /* ─── Footer ─── */
+  .foot {
+    position: absolute;
+    bottom: 20px;
+    left: 48px;
+    right: 48px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 9.5px;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  /* ─── Print ─── */
+  @page { size: letter; margin: 0; }
+  @media print {
+    body { background: white; padding: 0; gap: 0; }
+    .page { box-shadow: none; width: 8.5in; min-height: 11in; padding: 0.5in 0.6in 0.7in; page-break-after: always; }
+    .print-btn { display: none !important; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+  .print-btn {
+    position: fixed; top: 20px; right: 20px;
+    background: var(--line); color: var(--paper);
+    border: none; padding: 10px 16px;
+    font-family: var(--body); font-size: 13px; font-weight: 600;
+    letter-spacing: 0.5px; cursor: pointer; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .print-btn:hover { background: #000; }
+</style>
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()">Print / Save PDF</button>
+
+<!-- ══════════════ PAGE 1 / FRONT ══════════════ -->
+<div class="page">
+
+  <div class="masthead">
+    <div class="masthead-top">morning work · key academy · 5th grade · [day of week] math</div>
+    <div class="masthead-row">
+      <div>
+        <div class="title">Morning Work.</div>
+        <div class="title-sub">[Skill or topic]</div>
+      </div>
+      <div style="text-align: right;">
+        <div class="day-badge">Day [#]</div>
+        <div class="standard-tag">[Standard] · [Date]</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="name-strip">
+    <div class="field" style="flex: 1.8;"><span>Name</span><div class="rule" style="flex: 1;"></div></div>
+    <div class="field" style="flex: 0.9;"><span>Date</span><div class="rule" style="flex: 1;"></div></div>
+    <div class="field" style="flex: 0.5;"><span>Block</span><div class="rule" style="flex: 1;"></div></div>
+  </div>
+
+  <!-- Check-in + Joke -->
+  <div class="top-row">
+    <div class="card">
+      <div class="sec">Check-In <span class="note">how are you feeling today?</span></div>
+      <div class="checkin-scale">
+        <div class="checkin-cell"><div class="checkin-num">0</div><div class="checkin-label">need<br>support</div></div>
+        <div class="checkin-cell"><div class="checkin-num">1</div><div class="checkin-label">not my<br>best</div></div>
+        <div class="checkin-cell"><div class="checkin-num">2</div><div class="checkin-label">getting<br>by</div></div>
+        <div class="checkin-cell"><div class="checkin-num">3</div><div class="checkin-label">feeling<br>good</div></div>
+        <div class="checkin-cell"><div class="checkin-num">4</div><div class="checkin-label">feeling<br>great</div></div>
+        <div class="checkin-cell"><div class="checkin-num">5</div><div class="checkin-label">ready<br>to lead</div></div>
+      </div>
+    </div>
+
+    <div class="card joke-card">
+      <div>
+        <div class="sec">Math Joke</div>
+        <div class="joke-q"><em>Q:</em>[Joke question goes here]</div>
+        <div class="joke-a"><em>A:</em>[Punchline goes here]</div>
+      </div>
+      <div class="joke-rate">
+        <span>rate it</span>
+        <div class="stars">
+          <div class="star">1</div>
+          <div class="star">2</div>
+          <div class="star">3</div>
+          <div class="star">4</div>
+          <div class="star">5</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fluency Sprint -->
+  <div class="fluency">
+    <div class="fluency-head">
+      <div class="fluency-title">Fluency Sprint<small>multiplication facts</small></div>
+      <div class="fluency-timer">2 min · go!</div>
+    </div>
+    <div class="fluency-grid">
+      <div class="fact">_ × _ =<div class="ans"></div></div>
+      <div class="fact">_ × _ =<div class="ans"></div></div>
+      <div class="fact">_ × _ =<div class="ans"></div></div>
+      <div class="fact">_ × _ =<div class="ans"></div></div>
+      <div class="fact">_ × _ =<div class="ans"></div></div>
+      <div class="fact">_ × _ =<div class="ans"></div></div>
+      <div class="fact">_ × _ =<div class="ans"></div></div>
+      <div class="fact">_ × _ =<div class="ans"></div></div>
+      <div class="fact">_ × _ =<div class="ans"></div></div>
+      <div class="fact">_ × _ =<div class="ans"></div></div>
+      <div class="fact">_ × _ =<div class="ans"></div></div>
+      <div class="fact">_ × _ =<div class="ans"></div></div>
+      <div class="fact">_ × _ =<div class="ans"></div></div>
+      <div class="fact">_ × _ =<div class="ans"></div></div>
+      <div class="fact">_ × _ =<div class="ans"></div></div>
+      <div class="fact">_ × _ =<div class="ans"></div></div>
+    </div>
+  </div>
+
+  <!-- Practice Problem 1 -->
+  <div class="practice-head">
+    <div class="practice-title">Practice.<span style="font-family: var(--body); font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: 0.5px; text-transform: none; margin-left: 10px;">show all your work</span></div>
+    <div class="practice-sub">[Standard] · [Tag]</div>
+  </div>
+
+  <div class="problem">
+    <div class="p-num">1</div>
+    <div class="p-body">
+      <div class="p-prompt"><strong>[Problem text with numbers]</strong></div>
+
+      <!-- SCAFFOLD SLOT: paste from templates/problems/ or delete this block -->
+      <!--
+      <div class="scaffold">
+        <div class="scaffold-label">[Scaffold type]</div>
+        [scaffold markup here]
+      </div>
+      -->
+
+      <div class="p-meta">Show your work</div>
+      <div class="work-space"></div>
+
+      <div class="answer-row">
+        <span class="answer-label">Answer</span>
+        <div class="answer-rule"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>key academy · 5th grade · morning work</span>
+    <span>— 1 of 2 · continued →</span>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE 2 / BACK ══════════════ -->
+<div class="page">
+
+  <div class="masthead">
+    <div class="masthead-top">morning work · key academy · 5th grade</div>
+    <div class="masthead-row">
+      <div>
+        <div class="title">On Your Own.</div>
+        <div class="title-sub">More practice · show all your work</div>
+      </div>
+      <div style="text-align: right;">
+        <div class="day-badge">Day [#]</div>
+        <div class="standard-tag">[Standard]</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="name-strip" style="margin-bottom: 14px;">
+    <div class="field"><span>Name</span><div class="rule" style="flex: 1;"></div></div>
+    <div class="field" style="flex: 0.35;"><span>Block</span><div class="rule" style="flex: 1;"></div></div>
+  </div>
+
+  <!-- Problem 2 -->
+  <div class="problem" style="margin-bottom: 12px;">
+    <div class="p-num">2</div>
+    <div class="p-body">
+      <div class="p-prompt"><strong>[Problem text with numbers]</strong></div>
+      <div class="p-meta">Show your work</div>
+      <div class="work-space" style="min-height: 180px;"></div>
+      <div class="answer-row">
+        <span class="answer-label">Answer</span>
+        <div class="answer-rule"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Problem 3 -->
+  <div class="problem" style="margin-bottom: 12px;">
+    <div class="p-num">3</div>
+    <div class="p-body">
+      <div class="p-prompt"><strong>[Problem text with numbers]</strong></div>
+      <div class="p-meta">Show your work</div>
+      <div class="work-space" style="min-height: 180px;"></div>
+      <div class="answer-row">
+        <span class="answer-label">Answer</span>
+        <div class="answer-rule"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Problem 4 / Stretch (optional) -->
+  <div class="problem" style="margin-bottom: 12px;">
+    <div class="p-num">4</div>
+    <div class="p-body">
+      <div class="p-prompt"><strong>[Stretch problem or additional practice]</strong></div>
+      <div class="p-meta">Show your work</div>
+      <div class="work-space" style="min-height: 180px;"></div>
+      <div class="answer-row">
+        <span class="answer-label">Answer</span>
+        <div class="answer-rule"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>key academy · 5th grade · morning work</span>
+    <span>— 2 of 2 —</span>
+  </div>
+</div>
+
+</body>
+</html>
