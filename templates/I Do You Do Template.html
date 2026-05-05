@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>I Do · You Do — Template</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Kalam:wght@300;400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #111;
+    --muted: #666;
+    --line: #222;
+    --paper: #fff;
+    --soft: #f5f3ec;
+    --display: "Caveat", "Kalam", cursive;
+    --hand: "Kalam", cursive;
+    --body: "Inter", system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #e8e4d8; font-family: var(--body); color: var(--ink); }
+  body { padding: 28px 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+
+  .page {
+    width: 816px;
+    min-height: 1056px;
+    background: var(--paper);
+    padding: 40px 48px 56px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 8px 30px rgba(0,0,0,0.1);
+    position: relative;
+  }
+
+  /* ─── Masthead ─── */
+  .masthead {
+    border-bottom: 2.5px solid var(--line);
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+  }
+  .masthead-top {
+    font-size: 10px;
+    letter-spacing: 2.4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .masthead-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .title {
+    font-family: var(--display);
+    font-size: 60px;
+    line-height: 0.82;
+    font-weight: 700;
+    letter-spacing: -1px;
+  }
+  .title-sub {
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .day-badge {
+    display: inline-block;
+    background: var(--line);
+    color: var(--paper);
+    font-family: var(--display);
+    font-size: 22px;
+    line-height: 1;
+    padding: 6px 14px 8px;
+    transform: rotate(-2deg);
+    margin-bottom: 4px;
+  }
+  .standard-tag {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: right;
+    font-weight: 500;
+  }
+
+  /* ─── Name + check-in row ─── */
+  .top-strip {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .name-strip {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    font-size: 11px;
+    letter-spacing: 1.2px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .name-strip .field { display: flex; align-items: baseline; gap: 8px; flex: 1; }
+  .name-strip .rule { border-bottom: 1.5px solid var(--line); height: 20px; flex: 1; }
+
+  .checkin-mini {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .checkin-mini-label {
+    font-size: 10px;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--muted);
+  }
+  .checkin-mini-boxes {
+    display: flex;
+    gap: 4px;
+  }
+  .checkin-mini-boxes div {
+    width: 28px; height: 28px;
+    border: 1.5px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--display);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  /* ─── I Do / You Do split ─── */
+  .ido-youdo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .panel {
+    border: 1.5px solid var(--line);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    min-height: 540px;
+  }
+  .panel.ido {
+    background: var(--soft);
+  }
+  .panel-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1.5px solid var(--line);
+  }
+  .panel-stamp {
+    background: var(--line);
+    color: var(--paper);
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 700;
+    padding: 2px 12px 4px;
+    transform: rotate(-2deg);
+    line-height: 1;
+  }
+  .panel-title {
+    font-family: var(--display);
+    font-size: 28px;
+    line-height: 1;
+  }
+  .panel-sub {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    margin-left: auto;
+  }
+
+  .prompt {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .prompt strong { font-weight: 700; }
+
+  /* ─── Teacher photo slot ─── */
+  .photo-slot {
+    flex: 1;
+    border: 1.5px dashed var(--line);
+    background: repeating-linear-gradient(
+      135deg,
+      rgba(0,0,0,0.02) 0,
+      rgba(0,0,0,0.02) 12px,
+      rgba(0,0,0,0.05) 12px,
+      rgba(0,0,0,0.05) 24px
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--display);
+    font-size: 22px;
+    color: var(--muted);
+    text-align: center;
+    padding: 16px;
+    min-height: 360px;
+  }
+  .photo-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .photo-caption {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    margin-top: 8px;
+    text-align: center;
+  }
+
+  /* ─── Student work space ─── */
+  .scaffold {
+    margin-bottom: 8px;
+  }
+  .scaffold-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .work-meta {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .work-space {
+    flex: 1;
+    min-height: 220px;
+  }
+  .answer-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--line);
+  }
+  .answer-label {
+    background: var(--line);
+    color: var(--paper);
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 700;
+    padding: 3px 14px 5px;
+    transform: rotate(-2deg);
+  }
+  .answer-rule {
+    width: 200px;
+    border-bottom: 2px solid var(--line);
+    height: 28px;
+  }
+
+  /* ─── Back of sheet: 3 practice problems ─── */
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .section-title {
+    font-family: var(--display);
+    font-size: 36px;
+    line-height: 1;
+  }
+  .section-sub {
+    font-size: 10px;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .problem {
+    display: flex;
+    gap: 14px;
+    border: 1.5px solid var(--line);
+    padding: 12px 14px;
+    margin-bottom: 12px;
+  }
+  .p-num {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--line);
+    color: var(--paper);
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .p-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .p-prompt {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .p-prompt strong { font-weight: 700; }
+
+  /* ─── Foot ─── */
+  .foot {
+    position: absolute;
+    bottom: 20px;
+    left: 48px;
+    right: 48px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 9.5px;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  /* ─── Print ─── */
+  @page { size: letter; margin: 0; }
+  @media print {
+    body { background: white; padding: 0; gap: 0; }
+    .page { box-shadow: none; width: 8.5in; min-height: 11in; padding: 0.5in 0.55in 0.6in; page-break-after: always; }
+    .print-btn { display: none !important; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+  .print-btn {
+    position: fixed; top: 20px; right: 20px;
+    background: var(--line); color: var(--paper);
+    border: none; padding: 10px 16px;
+    font-family: var(--body); font-size: 13px; font-weight: 600;
+    letter-spacing: 0.5px; cursor: pointer; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .print-btn:hover { background: #000; }
+</style>
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()">Print / Save PDF</button>
+
+<!-- ══════════════ PAGE 1 / FRONT — I Do · You Do ══════════════ -->
+<div class="page">
+
+  <div class="masthead">
+    <div class="masthead-top">key academy · 5th grade · i do · you do</div>
+    <div class="masthead-row">
+      <div>
+        <div class="title">Let's Try It.</div>
+        <div class="title-sub">[Skill or topic goes here]</div>
+      </div>
+      <div style="text-align: right;">
+        <div class="day-badge">Lesson</div>
+        <div class="standard-tag">[Standard] · [Date]</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Name + Check-in -->
+  <div class="top-strip">
+    <div class="name-strip">
+      <div class="field"><span>Name</span><div class="rule"></div></div>
+      <div class="field" style="flex: 0.6;"><span>Date</span><div class="rule"></div></div>
+      <div class="field" style="flex: 0.35;"><span>Block</span><div class="rule"></div></div>
+    </div>
+    <div class="checkin-mini">
+      <span class="checkin-mini-label">Check-in</span>
+      <div class="checkin-mini-boxes">
+        <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- I Do / You Do split -->
+  <div class="ido-youdo">
+
+    <!-- I DO -->
+    <div class="panel ido">
+      <div class="panel-head">
+        <span class="panel-stamp">I do.</span>
+        <span class="panel-title">teacher model</span>
+      </div>
+      <div class="prompt"><strong>Problem:</strong> [Teacher's exemplar problem — same skill, different numbers than the student version]</div>
+
+      <!-- Photo slot: replace this block with <img src="uploads/photo.jpg" alt="teacher model"> -->
+      <div class="photo-slot">
+        <!-- <img src="uploads/your-photo.jpg" alt="teacher model"> -->
+        drop photo of worked<br>exemplar here
+      </div>
+      <div class="photo-caption">— teacher's worked example —</div>
+    </div>
+
+    <!-- YOU DO -->
+    <div class="panel youdo">
+      <div class="panel-head">
+        <span class="panel-stamp" style="background: var(--paper); color: var(--line); border: 2px solid var(--line);">You do.</span>
+        <span class="panel-title">your turn</span>
+      </div>
+      <div class="prompt"><strong>Problem:</strong> [Parallel problem — same skill, different numbers from the teacher's model]</div>
+
+      <!-- Optional scaffold: paste from problems/ or delete this block -->
+      <!--
+      <div class="scaffold">
+        <div class="scaffold-label">Area model</div>
+        [paste scaffold markup here]
+      </div>
+      -->
+
+      <div class="work-meta">Show your work</div>
+      <div class="work-space"></div>
+
+      <div class="answer-row">
+        <span class="answer-label">Answer</span>
+        <div class="answer-rule"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    <span>key academy · 5th grade</span>
+    <span>— 1 of 2 · continued on back →</span>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE 2 / BACK — Independent practice ══════════════ -->
+<div class="page">
+
+  <div class="masthead">
+    <div class="masthead-top">key academy · 5th grade · i do · you do</div>
+    <div class="masthead-row">
+      <div>
+        <div class="title">On Your Own.</div>
+        <div class="title-sub">Same skill · three new problems</div>
+      </div>
+      <div style="text-align: right;">
+        <div class="day-badge">Practice</div>
+        <div class="standard-tag">[Standard]</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="name-strip" style="margin-bottom: 14px;">
+    <div class="field"><span>Name</span><div class="rule"></div></div>
+    <div class="field" style="flex: 0.35;"><span>Block</span><div class="rule"></div></div>
+  </div>
+
+  <div class="section-head">
+    <div class="section-title">Practice.</div>
+    <div class="section-sub">show all your work</div>
+  </div>
+
+  <!-- Problem 1 -->
+  <div class="problem">
+    <div class="p-num">1</div>
+    <div class="p-body">
+      <div class="p-prompt"><strong>[Problem text with numbers]</strong></div>
+
+      <!-- Optional scaffold: paste from problems/ or delete -->
+
+      <div class="work-meta">Show your work</div>
+      <div class="work-space" style="min-height: 150px;"></div>
+
+      <div class="answer-row">
+        <span class="answer-label">Answer</span>
+        <div class="answer-rule"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Problem 2 -->
+  <div class="problem">
+    <div class="p-num">2</div>
+    <div class="p-body">
+      <div class="p-prompt"><strong>[Problem text with numbers]</strong></div>
+      <div class="work-meta">Show your work</div>
+      <div class="work-space" style="min-height: 150px;"></div>
+      <div class="answer-row">
+        <span class="answer-label">Answer</span>
+        <div class="answer-rule"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Problem 3 -->
+  <div class="problem">
+    <div class="p-num">3</div>
+    <div class="p-body">
+      <div class="p-prompt"><strong>[Problem text with numbers]</strong></div>
+      <div class="work-meta">Show your work</div>
+      <div class="work-space" style="min-height: 150px;"></div>
+      <div class="answer-row">
+        <span class="answer-label">Answer</span>
+        <div class="answer-rule"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>key academy · 5th grade</span>
+    <span>— 2 of 2 —</span>
+  </div>
+</div>
+
+</body>
+</html>
